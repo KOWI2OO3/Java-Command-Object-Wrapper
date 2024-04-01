@@ -13,8 +13,27 @@ public class CommandHandler {
     
     private final Map<String, ICommand> commands;
 
+    public CommandHandler() {
+        this(new HashMap<>());
+    }
+
     public CommandHandler(Map<String, ICommand> commands) {
         this.commands = new HashMap<>(commands);
+    }
+
+    /**
+     * Registers a new command to the command handler.
+     * But it can only register a command if there is no command already registered 
+     * with the same command name.
+     * @param name the name of the command 
+     * @param command the command to register
+     * @return whether the command has been registered.
+     */
+    public boolean register(String name, ICommand command) {
+        if(commands.containsKey(name))
+            return false;
+        commands.put(name, command);
+        return true;
     }
 
     /**
@@ -26,7 +45,7 @@ public class CommandHandler {
     public ICommand getCommand(String name) {
         if(commands.containsKey(name))
             return commands.get(name);
-        throw new NoSuchCommandException("No command with the name '" + name + "' exists for this handler! did you make a typo? did you use the correct handler?", name);
+        throw new NoSuchCommandException("No command with the name '" + name + "' exists for this handler! did you type it correctly and did you use the correct handler?", name);
     }
 
     /**
