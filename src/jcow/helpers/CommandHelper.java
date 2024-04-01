@@ -23,6 +23,7 @@ public final class CommandHelper {
      * this method also cleans any formatting characters like the brackets used
      * @param input the input string to split for parameters
      * @return an array of the input splits
+     * @throws ParameterParsingException when a group can not be properly constructed, usually the case when a group has an opening character but not a closing character
      */
     public static String[] splitParameters(String input) {
         if(!input.contains("\"") && !input.contains("'"))
@@ -56,6 +57,7 @@ public final class CommandHelper {
      * @param input the input array for which elements should be grouped [should not be null]
      * @param groupBy the identifier to group by
      * @return the new grouped array
+     * @throws ParameterParsingException when a group can not be properly constructed, usually the case when a group has an opening character but not a closing character
      */
     public static String[] groupAndClean(String[] input, String groupBy) {
         return groupAndClean(input, groupBy, groupBy);
@@ -71,6 +73,7 @@ public final class CommandHelper {
      * @param input the input array for which elements should be grouped [should not be null]
      * @param groupBy the identifier to group by
      * @return the new grouped array
+     * @throws ParameterParsingException when a group can not be properly constructed, usually the case when a group has an opening character but not a closing character
      */
     public static String[] group(String[] input, String groupBy) {
         return group(input, groupBy, groupBy);
@@ -87,6 +90,7 @@ public final class CommandHelper {
      * @param groupByStart the identifier to start a group with
      * @param groupByEnd the identified to end a group with 
      * @return the new grouped array
+     * @throws ParameterParsingException when a group can not be properly constructed, usually the case when a group has an opening character but not a closing character
      */
     public static String[] groupAndClean(String[] input, String groupByStart, String groupByEnd) {
         var result = group(input, groupByStart, groupByEnd);
@@ -108,6 +112,7 @@ public final class CommandHelper {
      * @param groupByStart the identifier to start a group with
      * @param groupByEnd the identified to end a group with 
      * @return the new grouped array
+     * @throws ParameterParsingException when a group can not be properly constructed, usually the case when a group has an opening character but not a closing character
      */
     public static String[] group(String[] input, String groupByStart, String groupByEnd) {
         if(input == null || groupByStart == null)
