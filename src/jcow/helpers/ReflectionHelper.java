@@ -11,7 +11,7 @@ import jcow.utils.Pair;
 
 public final class ReflectionHelper {
     
-    private ReflectionHelper() {};
+    private ReflectionHelper() {}
 
     /**
      * Gets all classes in a certain folder
