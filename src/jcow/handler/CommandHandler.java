@@ -22,6 +22,19 @@ public class CommandHandler {
     }
 
     /**
+     * Whether this handler can handle the command of the given type
+     * @param command the command to check
+     * @return whether the command can be handled
+     */
+    public boolean canHandle(String command) {
+        if(command == null || command.isEmpty())
+            return false;
+    
+        var commandName = CommandHelper.splitParameters(command)[0];
+        return commands.containsKey(commandName);
+    }
+
+    /**
      * Registers a new command to the command handler.
      * But it can only register a command if there is no command already registered 
      * with the same command name.

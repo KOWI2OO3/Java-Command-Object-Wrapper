@@ -11,4 +11,6 @@ public interface ICommand {
         return List.of();
     }
 
+    default String getUsage() { return ""; } 
+
 }
