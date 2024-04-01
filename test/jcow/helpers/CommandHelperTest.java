@@ -11,28 +11,28 @@ public class CommandHelperTest {
     void testSimpleSplitInput() {
         var input = "Test parameter parsing simple";
         var expected = new String[] {"Test","parameter", "parsing", "simple"};
-        assertArrayEquals(expected, CommandHelper.splitInput(input));
+        assertArrayEquals(expected, CommandHelper.splitParameters(input));
     }
 
     @Test
     void testStringParameterSplitInput() {
         var input = "Test parameter \"parsing simple\"";
         var expected = new String[] {"Test","parameter", "parsing simple"};
-        assertArrayEquals(expected, CommandHelper.splitInput(input));
+        assertArrayEquals(expected, CommandHelper.splitParameters(input));
     }
 
     @Test
     void testCharBracketGroupingSplitInput() {
         var input = "Test parameter 'parsing simple'";
         var expected = new String[] {"Test","parameter", "parsing simple"};
-        assertArrayEquals(expected, CommandHelper.splitInput(input));
+        assertArrayEquals(expected, CommandHelper.splitParameters(input));
     }
 
     @Test
     void testStringAndCharBracketGroupingSplitInput() {
         var input = "Test \"parameter 'parsing simple'\"";
         var expected = new String[] {"Test","parameter 'parsing simple'"};
-        assertArrayEquals(expected, CommandHelper.splitInput(input));
+        assertArrayEquals(expected, CommandHelper.splitParameters(input));
     }
 
 
