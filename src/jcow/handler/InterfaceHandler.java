@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * An basis implementation of an interface which should be extended to add the actual unique
+ * interaction.
+ * 
+ * @author KOWI2003
+ */
 public abstract class InterfaceHandler {
     
     private final Thread thread;
@@ -77,6 +83,10 @@ public abstract class InterfaceHandler {
      */
     protected abstract void handle();
 
+    /**
+     * Prints an error to the output
+     * @param error the error to print
+     */
     protected abstract void printError(String error);
 
     /**

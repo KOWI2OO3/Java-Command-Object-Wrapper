@@ -4,6 +4,10 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+/**
+ * A simple console based interface implementation.
+ * @author KOWI2003
+ */
 public class CLIHandler extends InterfaceHandler {
 
     // Internal Stream handling
