@@ -47,6 +47,14 @@ public abstract class InterfaceHandler {
     }
 
     /**
+     * Attaches the help command to the interface, which means the interface is now capable of
+     * telling the user all of the commands when they enter the 'help' command
+     */
+    public void attachHelpCommand() {
+        attachHandler(new HelpCommandHandler(this));
+    }
+
+    /**
      * Attaches a command handler such that it can be used to handle incomming commands
      * @param handler the handler to attach [not null]
      * @return whether the handler has been attached

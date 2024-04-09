@@ -30,12 +30,12 @@ public class HelpCommandHandler implements ICommandHandler {
 
     @Override
     public String invoke(String command) {
-        var commandList = "";
+        var commandList = "'\n All Available Commands: \n";
         for(var handler : ui.handlers) {
             if(handler == this)
                 continue;
             for(var cmd : handler.getCommands()) 
-                commandList += cmd + "\n";
+                commandList += "- " + cmd + "\n";
         }
         return commandList;
     }
