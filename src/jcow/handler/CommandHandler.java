@@ -1,6 +1,7 @@
 package jcow.handler;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import jcow.helpers.CommandHelper;
 import jcow.helpers.CommandParseException;
 import jcow.helpers.ParameterParseException;
 
-public class CommandHandler {
+public class CommandHandler implements ICommandHandler {
     
     private final Map<String, ICommand> commands;
 
@@ -79,5 +80,10 @@ public class CommandHandler {
             throw new CommandParseException("'" + commandName + "' is not a valid command!", command, 0);
         
         return cmd.invoke(Arrays.copyOfRange(splits, 1, splits.length));
+    }
+
+    @Override
+    public Collection<String> getCommands() {
+        return commands.keySet();
     }
 }

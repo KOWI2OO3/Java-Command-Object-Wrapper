@@ -54,6 +54,6 @@ public class CommandHelperTest {
     void testGroupIncorrectFormat() {
         var test = "some test \"of splitting\" \"Hi";
         var splits = test.split(" ");
-        assertThrows(ParameterParsingException.class, () -> CommandHelper.group(splits, "\""));
+        assertThrows(ParameterParseException.class, () -> CommandHelper.group(splits, "\""));
     }
 }
