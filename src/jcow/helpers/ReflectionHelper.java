@@ -6,8 +6,11 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -185,6 +188,22 @@ public final class ReflectionHelper {
     }
 
     /**
+     * Gets all fields from a class with the specified name and that satisfies the filter
+     * @param type the type to get the field from
+     * @param name the name of the field to get
+     * @param filter the filter of the field to get
+     * @param nameMapper the mapper for the name of a field, this may be null then the normal name of the field is used
+     * @return array of fields with the specified name and satisfies the filter or null if no field is found
+     */
+    public static Field[] getFields(Class<?> type, String name, Predicate<Field> filter, Function<Field, String> nameMapper) {
+        Function<Field, String> mapper = nameMapper == null ? field -> field.getName() : nameMapper;
+        Predicate<Field> finalFilter = field -> 
+            mapper.apply(field).equals(name) && (filter == null ? true : filter.test(field));
+
+        return getField(type, finalFilter);
+    }
+
+    /**
      * Gets a all fields from a class which satisfy the filter
      * @param type the type to get the field from
      * @param filter the filter of the field to get
@@ -224,6 +243,21 @@ public final class ReflectionHelper {
             .filter(method -> mapper.apply(method).equals(name))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * Gets all methods from a class with the specified name and that satisfy the filter
+     * @param type the type to get the method from
+     * @param name the name of the method to get
+     * @param filter the filter of the method to get
+     * @param nameMapper the mapper for the name of a method, this may be null then the normal name of the method is used
+     * @return array of methods with the specified name and satisfies the filter or and empty array if no method was found
+     */
+    public static Method[] getMethods(Class<?> type, String name, Predicate<Method> filter, Function<Method, String> nameMapper) {
+        if(type == null || name == null) return null;
+        Function<Method, String> mapper = nameMapper == null ? method -> method.getName() : nameMapper;
+        return Arrays.stream(getMethod(type, filter))
+            .filter(method -> mapper.apply(method).equals(name)).toArray(Method[]::new);
     }
 
     /**
@@ -290,5 +324,66 @@ public final class ReflectionHelper {
             type = field.getType();
         }
         return null;
+    }
+
+    /**
+     * Gets all methods from a class with the specified path, this path is a path through the fields of the class given
+     * @param type the type to get the method from
+     * @param path the path to the method
+     * @param filter the filter for wich the method and the fields leading to it should satisfy
+     * @param nameMapper the mapper for the name of a member, this may be null then the normal name of the member is used
+     * @return array of methods with the specified path where each element in the path satisfies the filter or an empty array if no method was found
+     */
+    public static Method[] getMethods(Class<?> type, String[] path, Predicate<AccessibleObject> filter, Function<AccessibleObject, String> nameMapper) {
+        for (int i = 0; i < path.length; i++) {
+            var current = path[i];
+
+            // if a method exists then we can just get the method and return it
+            var methods = getMethods(type, current, member -> filter.apply(member), member -> nameMapper.apply(member));
+            if(methods.length > 0)
+                return methods;
+            
+            // if no method is found then we try to get the field such that we can find the method in the field
+            var field = getField(type, current, member -> filter.apply(member), member -> nameMapper.apply(member));
+            if(field == null)
+                return null;
+            type = field.getType();
+        }
+        return new Method[0];
+    }
+
+    /**
+     * Gets all methods from a class with the specified path, this path is a path through the fields of the class given
+     * @param type the type to get the method from
+     * @param path the path to the method
+     * @param filter the filter for wich the method and the fields leading to it should satisfy
+     * @param nameMapper the mapper for the name of a member, this may be null then the normal name of the member is used
+     * @return a map of all the found methods along the path given mapped to the index in the path, where each element in the path satisfies the filter
+     */
+    public static Map<Method, Integer> getAllMethodsAlongPath(Class<?> type, String[] path, Predicate<AccessibleObject> filter, Function<AccessibleObject, String> nameMapper) {
+        var result = new HashMap<Method, Integer>(); 
+        
+        var fields = new Stack<Pair<Class<?>, Integer>>();
+        fields.add(Pair.of(type, 0));
+
+        while(!fields.isEmpty()) {
+            var fieldInfo = fields.pop();
+            type = fieldInfo.first();
+            int index = fieldInfo.second();
+
+            var current = path[index];
+            var methods = getMethods(type, current, member -> filter.apply(member), member -> nameMapper.apply(member));
+            
+            if(methods.length > 0)
+                for (var method : methods)
+                    result.put(method, index);
+            
+            var founds = getFields(type, current, member -> filter.apply(member), member -> nameMapper.apply(member));
+            if(founds.length == 0) continue;
+            for (var found : founds)
+                fields.add(Pair.of(found.getType(), index + 1));
+        }
+        
+        return result; 
     }
 }
