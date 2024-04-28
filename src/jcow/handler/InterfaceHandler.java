@@ -41,6 +41,14 @@ public abstract class InterfaceHandler {
     public void stop() {
         thread.interrupt();
     }
+
+    /**
+     * Executes a command on the interface
+     * @param command the command to execute
+     */
+    public void execute(String command) {
+        handleCommand(command);
+    }
     
     /**
      * Creates a new command handler which is already attached to the interface 

@@ -35,7 +35,6 @@ public class CommandHelperTest {
         assertArrayEquals(expected, CommandHelper.splitParameters(input));
     }
 
-
     @Test
     void testGroupSimple() {
         var test = "some test of splitting";

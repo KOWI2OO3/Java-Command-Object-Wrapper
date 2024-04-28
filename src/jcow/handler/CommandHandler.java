@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import jcow.command.CommandContext;
 import jcow.command.ICommand;
 import jcow.helpers.CommandHelper;
 import jcow.helpers.CommandParseException;
@@ -79,7 +80,9 @@ public class CommandHandler implements ICommandHandler {
         if(cmd == null)
             throw new CommandParseException("'" + commandName + "' is not a valid command!", command, 0);
         
-        return cmd.invoke(Arrays.copyOfRange(splits, 1, splits.length));
+        var params = Arrays.copyOfRange(splits, 1, splits.length);
+        var context = new CommandContext(CommandHelper.filterOptionals(params), CommandHelper.getOptionals(params));
+        return cmd.invoke(context);
     }
 
     @Override

@@ -1,7 +1,14 @@
 package jcow.helpers;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import jcow.command.IContext;
+import jcow.handler.types.TypeParser;
+import jcow.utils.ParameterReader;
 
 /**
  * A simple helper class aiding in the parsing and handling of commands
@@ -147,6 +154,72 @@ public final class CommandHelper {
             result.add(combined);
         }
         return result.toArray(String[]::new);
+    }
+
+    private static final Map<Class<?>, TypeParser<?>> typeParsers = new HashMap<>();
+
+    /**
+     * Parses the input string into the given type
+     * @param <T> the type to parse to
+     * @param type the type to parse to
+     * @param annotations the annotations of the parameter (/type)
+     * @param context the context of the command
+     * @param reader the reader to read the parameters from
+     * @return the parsed type
+     */
+    public static <T> T parseType(Class<T> type, Annotation[] annotations, IContext context, ParameterReader reader) {
+        var parser = typeParsers.get(type);
+        return parser == null ? null : type.cast(parser.parse(context, reader));
+    }
+
+    /**
+     * Gets all of the optional parameters from the given parameters input list.
+     * 
+     * Here optional parameters are parameters that start with a dash (-) having a value after them. 
+     * This does mean that the parser must find a value after the optional parameter header.
+     * <br></br>
+     * Optional parameters without a value should have 2 dashes (--) before them and do not have a value.
+     * 
+     * @param parameters the list of parameters to get the optionals from
+     * @return a map of the optional parameters
+     * @throws ParameterParseException when an optional parameter has no value
+     */
+    public static Map<String, String> getOptionals(String[] parameters) {
+        var map = new HashMap<String, String>();
+        for(int i = 0; i < parameters.length; i++) {
+            var param = parameters[i];
+            if(param.startsWith("--")) {
+                map.put(param, null);
+                continue;
+            }else if(param.startsWith("-")) {
+                if(i+1 >= parameters.length)
+                    throw new ParameterParseException("Failed to parse command parameters as the optional parameter [" + param + "] has no value!", parameters, i);
+
+                var key = param;
+                var value = parameters[++i];
+                map.put(key, value);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * Removes all of the optional parameters from the given parameters input list
+     * @param parameters the list of parameters to remove the optionals from
+     * @return a list of the parameters without the optionals
+     */
+    public static String[] filterOptionals(String[] parameters) {
+        var list = new ArrayList<>();
+        for (int i = 0; i < parameters.length; i++) {
+            var param = parameters[i];
+            if(param.startsWith("-")) {
+                if(!param.startsWith("--")) 
+                    i++;
+                continue;
+            }
+            list.add(param);
+        }
+        return list.toArray(String[]::new);
     }
 
 }

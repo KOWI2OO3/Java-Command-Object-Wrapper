@@ -2,6 +2,12 @@ package jcow.command;
 
 import java.util.function.Supplier;
 
+/**
+ * Allows for creating a simple command without the needing a special class and interface
+ * implementation for it
+ * 
+ * @author KOWI2003
+ */
 public class SimpleCommand implements ICommand {
 
     private final Runnable action;
@@ -18,7 +24,7 @@ public class SimpleCommand implements ICommand {
     }
 
     @Override
-    public String invoke(String... params) {
+    public String invoke(IContext context) {
         if(action != null)
             action.run();
         if(actionResult != null)
